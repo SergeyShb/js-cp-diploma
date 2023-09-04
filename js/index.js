@@ -87,44 +87,36 @@ for (let i = 0; i < pageNavDay.length; i++) {
 
 
 
+let body = "event=update";   // POST запрос который будем передавать
 
-let xhr = new XMLHttpRequest();
-xhr.open("POST", "https://jscp-diplom.netoserver.ru/");
-
-xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");   //http заголовок
-
-xhr.responseType = "json";   //задаём тип ответа JSON
-
-xhr.send("event=update");
-
-xhr.onload = function() {
-    xhr.response;
-    console.log(xhr.response);
-    console.log(xhr.getAllResponseHeaders());
+//вызываем функцию создания HTTP - запроса к серверу createRequest
+createRequest(body, (response) => { 
 
 
-
+    console.log(response);
+    
+    
     let main = Array.from(document.getElementsByTagName("main"))[0];   //получаем тэг main 
     console.log(main);
 
     main.innerHTML = "";   //удаляем всю html разметку внутри тэга main
 
 
-    for (let i in xhr.response.films.result) {
+    for (let i in response.films.result) {
         main.insertAdjacentHTML("beforeEnd", `
 
             <section class="movie">
 
                 <div class="movie__info">
                     <div class="movie__poster">
-                        <img class="movie__poster-image" alt=" ` + xhr.response.films.result[i].film_name + ` постер" src=" ` + xhr.response.films.result[i].film_poster + ` ">
+                        <img class="movie__poster-image" alt=" ` + response.films.result[i].film_name + ` постер" src=" ` + response.films.result[i].film_poster + ` ">
                     </div>
                     <div class="movie__description">
-                        <h2 class="movie__title"> ` + xhr.response.films.result[i].film_name + ` </h2>
-                        <p class="movie__synopsis"> ` + xhr.response.films.result[i].film_description + ` </p>
+                        <h2 class="movie__title"> ` + response.films.result[i].film_name + ` </h2>
+                        <p class="movie__synopsis"> ` + response.films.result[i].film_description + ` </p>
                         <p class="movie__data">
-                            <span class="movie__data-duration"> ` + xhr.response.films.result[i].film_duration + `  минут</span>
-                            <span class="movie__data-origin"> ` + xhr.response.films.result[i].film_origin + ` </span>
+                            <span class="movie__data-duration"> ` + response.films.result[i].film_duration + `  минут</span>
+                            <span class="movie__data-origin"> ` + response.films.result[i].film_origin + ` </span>
                         </p>
                     </div>
                 </div>  
@@ -135,7 +127,7 @@ xhr.onload = function() {
 
         
 
-        let filmId = xhr.response.films.result[i].film_id
+        let filmId = response.films.result[i].film_id
         console.log(filmId);
 
         //находим добавленный элемент и дабавляем к нему дата-атрибут filmId
@@ -145,7 +137,7 @@ xhr.onload = function() {
 
 
 
-        let seanceFilmId = xhr.response.seances.result.filter(item => item.seance_filmid === filmId);   //получили массив объектов с сеансами (для данного фильма)
+        let seanceFilmId = response.seances.result.filter(item => item.seance_filmid === filmId);   //получили массив объектов с сеансами (для данного фильма)
         console.log(seanceFilmId);
 
         let seancesTime = seanceFilmId.map(item => item.seance_time);   //получили массив с элеметами времени начала сеанса
@@ -169,7 +161,7 @@ xhr.onload = function() {
         for (let i = 0; i < seanceHallId.length; i++) {
             console.log("начало")
             
-            hallsFilms = xhr.response.halls.result.find(item => item.hall_id === seanceHallId[i]);   //находим объект в котором есть название нужного зала
+            hallsFilms = response.halls.result.find(item => item.hall_id === seanceHallId[i]);   //находим объект в котором есть название нужного зала
             console.log(hallsFilms);
 
             //проверяем если у зала hall_open === "1" значит зал открыт и показываем его на странице
@@ -207,7 +199,7 @@ xhr.onload = function() {
                 console.log(seancesStartInMinutes);
 
                 
-    
+
 
                 //добавляем найденные значения и массивы в объект
 
@@ -256,7 +248,7 @@ xhr.onload = function() {
             let movieSeancesHall = Array.from(main.lastElementChild.querySelectorAll(".movie-seances__hall"));   //=========================================
             let lastMovieSeancesHall = movieSeancesHall[movieSeancesHall.length - 1]
             console.log(lastMovieSeancesHall);
-            lastMovieSeancesHall.dataset.filmName = xhr.response.films.result[i].film_name   //добавляем дата-атрибут с названием фильма
+            lastMovieSeancesHall.dataset.filmName = response.films.result[i].film_name   //добавляем дата-атрибут с названием фильма
             lastMovieSeancesHall.dataset.hallName = hallsAndFilmsInfoArr[j].name   //добавляем дата-атрибут с названием зала
             lastMovieSeancesHall.dataset.hallId = hallsAndFilmsInfoArr[j].hallID;   //добавляем дата-атрибут со значением hallId
             lastMovieSeancesHall.dataset.priceStandart = hallsAndFilmsInfoArr[j].priceStandart;   //добавляем дата-атрибут со значением цены стандартного билета
@@ -300,7 +292,7 @@ xhr.onload = function() {
 
     };
 
-                     
+                    
 
     let movieSeancesTime = Array.from(document.querySelectorAll(".movie-seances__time"));
     console.log(movieSeancesTime);
@@ -310,7 +302,7 @@ xhr.onload = function() {
 
         movieSeancesTime[i].addEventListener("click", () => {
 
-    
+
             localStorage.setItem("seanceInfo", JSON.stringify(movieSeancesTime[i].dataset));   //записываем в localStorage объект movieSeancesTime[i].dataset (информация о сеансе) для передачи на лругую страницу
             console.log(localStorage.seanceInfo);
 
@@ -323,9 +315,7 @@ xhr.onload = function() {
         
     };
 
-
-};
-
+});
 
 
 

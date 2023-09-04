@@ -25,7 +25,7 @@ let ticketHall = document.querySelector(".ticket__hall");
 console.log(ticketHall);
 
 //добавляем номер зала
-ticketHall.innerText = seanceAndReservedChairInfo.hallName.replace(/\D/g, "");   //.replace(/\D/g, "") - убираем все символы кромн цифр
+ticketHall.innerText = seanceAndReservedChairInfo.hallName.replace(/\D/g, "");   //.replace(/\D/g, "") - убираем все символы кроме цифр
 
 let ticketStart = document.querySelector(".ticket__start");
 console.log(ticketStart);
@@ -43,18 +43,11 @@ console.log(acceptinButton);
 
 //при клике на кнопку бронируем места и отправляем разметку с выбранными местами на сервер
 acceptinButton.addEventListener("click", () => {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://jscp-diplom.netoserver.ru/");
 
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")   //http заголовок
+    // POST запрос который будем передавать
+    let body = `event=sale_add&timestamp=${seanceAndReservedChairInfo.timestamp}&hallId=${seanceAndReservedChairInfo.hallId}&seanceId=${seanceAndReservedChairInfo.seanceId}&hallConfiguration=${seanceAndReservedChairInfo.hallConfig}`;    
 
-    xhr.responseType = "json";   //задаём тип ответа JSON
+    //вызываем функцию создания HTTP - запроса к серверу createRequest
+    createRequest(body);
 
-    xhr.send(`event=sale_add&timestamp=${seanceAndReservedChairInfo.timestamp}&hallId=${seanceAndReservedChairInfo.hallId}&seanceId=${seanceAndReservedChairInfo.seanceId}&hallConfiguration=${seanceAndReservedChairInfo.hallConfig}`);
-
-    xhr.onload = function() {
-        xhr.response;
-        console.log(xhr.response);
-        console.log(xhr.getAllResponseHeaders());
-    };
 });

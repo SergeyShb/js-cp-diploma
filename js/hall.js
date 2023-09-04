@@ -49,24 +49,17 @@ console.log(reservedChairInfoObject);
 
 
 
-let xhr = new XMLHttpRequest();
-xhr.open("POST", "https://jscp-diplom.netoserver.ru/");
+let body = `event=get_hallConfig&timestamp=${seanceInfo.timestamp}&hallId=${hallInfo.hallId}&seanceId=${seanceInfo.seansesId}`;   // POST запрос который будем передавать
 
-xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")   //http заголовок
+//вызываем функцию создания HTTP - запроса к серверу createRequest
+createRequest(body, (response) => {
 
-xhr.responseType = "json";   //задаём тип ответа JSON
+    console.log(response);
 
-xhr.send(`event=get_hallConfig&timestamp=${seanceInfo.timestamp}&hallId=${hallInfo.hallId}&seanceId=${seanceInfo.seansesId}`);
-
-xhr.onload = function() {
-    xhr.response;
-    console.log(xhr.response);
-    console.log(xhr.getAllResponseHeaders());
-
-    if (xhr.response === null) {
+    if (response === null) {
         confStepWrapper.insertAdjacentHTML("beforeEnd", hallInfo.hallConfig );
     } else {
-        confStepWrapper.insertAdjacentHTML("beforeEnd", xhr.response );
+        confStepWrapper.insertAdjacentHTML("beforeEnd", response );
     };
 
 
@@ -169,7 +162,7 @@ xhr.onload = function() {
             console.log(reservedChairInfoObject);
 
 
-            localStorage.setItem("seanceAndReservedChairInfo", JSON.stringify(reservedChairInfoObject));   //записываем в localStorage объект reservedChairInfoObject (информация о сеансе и забронированных местах) для передачи на лругую страницу
+            localStorage.setItem("seanceAndReservedChairInfo", JSON.stringify(reservedChairInfoObject));   //записываем в localStorage объект reservedChairInfoObject (информация о сеансе и забронированных местах) для передачи на другую страницу
             console.log(localStorage.seanceInfo);
 
             window.location.href = "payment.html";   //при клике на кнопку переход на страницу покупки
@@ -180,4 +173,4 @@ xhr.onload = function() {
     });
 
 
-};
+});
